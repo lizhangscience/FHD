@@ -1,4 +1,4 @@
-pro eor_firstpass_versions
+pro eor_firstpass_versions, version = version
 except=!except
 !except=0
 heap_gc 
@@ -9,11 +9,11 @@ heap_gc
 ; parse command line args
 compile_opt strictarr
 args = Command_Line_Args(count=nargs)
-obs_id = args[0]
+;obs_id = args[0]
 ;obs_id = '1061311664'
-output_directory = args[1]
+;output_directory = args[1]
 ;output_directory = '/nfs/mwa-09/r1/djc/EoR2013/Aug23/'
-version = args[2]
+;version = args[2]
 ;version = 'nb_decon_Feb2016'
 cmd_args={version:version}
 
@@ -772,7 +772,22 @@ case version of
       max_cal_iter=100
       no_calibration_frequency_flagging=1
    end
-
+   'bjh_pytest_enterprise': begin
+      obs_id = '1061316296'
+      output_directory = '/data3/MWA/Aug23/pyuvdata_cotter_test/pyuvdata/'
+      lon=116.67081524
+      lat=-26.7033194
+      recalculate_all=1
+      mapfn_recalculate=0
+   end
+   'bjh_pytest_compare_enterprise': begin
+      obs_id = '1061316296'
+      output_directory = '/data3/MWA/Aug23/pyuvdata_cotter_test/cotter/'
+      lon=116.67081524
+      lat=-26.7033194
+      recalculate_all=1
+      mapfn_recalculate=0
+   end
   ;Nichole's versions
    'nb_no_long_tiles':begin
       diffuse_calibrate=filepath('EoR0_diffuse_model_94.sav',root=rootdir('FHD'),subdir='catalog_data')
@@ -1226,14 +1241,17 @@ case version of
      end
    
 endcase
-   
-if version EQ 'nb_pytest' then begin
-  vis_file_list = '/nfs/mwa-03/r1/EoR2013/cotter_pyuvfits_test/'+strtrim(string(obs_id),2)+'.uvfits'
-endif else begin
-  SPAWN, 'read_uvfits_loc.py -v ' + STRING(uvfits_version) + ' -s ' + $
-    STRING(uvfits_subversion) + ' -o ' + STRING(obs_id), vis_file_list
-  ;vis_file_list=vis_file_list ; this is silly, but it's so var_bundle sees it.
-endelse
+
+case version of
+   'nb_pytest': vis_file_list = '/nfs/mwa-03/r1/EoR2013/cotter_pyuvfits_test/'+strtrim(string(obs_id),2)+'.uvfits'
+   'bjh_pytest_enterprise': vis_file_list = '/data3/MWA/Aug23/pyuvdata_cotter_test/pyuvdata/'+strtrim(string(obs_id),2)+'.uvfits'
+   'bjh_pytest_compare_enterprise': vis_file_list = '/data3/MWA/Aug23/pyuvdata_cotter_test/cotter/'+strtrim(string(obs_id),2)+'.uvfits'
+   else: begin
+      SPAWN, 'read_uvfits_loc.py -v ' + STRING(uvfits_version) + ' -s ' + $
+      STRING(uvfits_subversion) + ' -o ' + STRING(obs_id), vis_file_list
+     ;vis_file_list=vis_file_list ; this is silly, but it's so var_bundle sees it.
+   end
+endcase
 undefine, uvfits_subversion, uvfits_version
 fhd_file_list=fhd_path_setup(vis_file_list,version=version,output_directory=output_directory)
 healpix_path=fhd_path_setup(output_dir=output_directory,subdir='Healpix',output_filename='Combined_obs',version=version)
