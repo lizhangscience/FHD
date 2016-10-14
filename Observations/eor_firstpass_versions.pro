@@ -777,6 +777,7 @@ case version of
       output_directory = '/data3/MWA/Aug23/pyuvdata_cotter_test/pyuvdata/'
       lon=116.67081524
       lat=-26.7033194
+      alt=377.827
       recalculate_all=1
       mapfn_recalculate=0
    end
@@ -785,6 +786,7 @@ case version of
       output_directory = '/data3/MWA/Aug23/pyuvdata_cotter_test/cotter/'
       lon=116.67081524
       lat=-26.7033194
+      alt=377.827
       recalculate_all=1
       mapfn_recalculate=0
    end
