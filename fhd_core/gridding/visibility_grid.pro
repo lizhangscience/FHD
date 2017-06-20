@@ -4,7 +4,7 @@ FUNCTION visibility_grid,visibility_ptr,vis_weight_ptr,obs,status_str,psf,params
     visibility_list=visibility_list,image_list=image_list,n_vis=n_vis,no_conjugate=no_conjugate,$
     return_mapfn=return_mapfn,mask_mirror_indices=mask_mirror_indices,no_save=no_save,$
     model_ptr=model_ptr,model_return=model_return,preserve_visibilities=preserve_visibilities,$
-    error=error,grid_uniform=grid_uniform,interpolate_grid_kernel=interpolate_grid_kernel,$
+    error=error,grid_uniform=grid_uniform,$
     grid_spectral=grid_spectral,spectral_uv=spectral_uv,spectral_model_uv=spectral_model_uv,_Extra=extra
 t0_0=Systime(1)
 heap_gc
