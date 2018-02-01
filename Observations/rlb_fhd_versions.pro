@@ -721,9 +721,7 @@ pro rlb_fhd_versions
   print,"Keywords set in wrapper:"
   print,structure_to_text(extra)
   print,""
-  
-  n_pol=4
-  
+    
   general_obs,_Extra=extra
   
 end
