@@ -51,7 +51,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 0
       diffuse_calibrate = 0
@@ -108,7 +107,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 1
       diffuse_calibrate = 0
@@ -133,7 +131,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 1
       diffuse_calibrate = 0
@@ -188,7 +185,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 0
       diffuse_calibrate = 0
@@ -214,7 +210,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 1
       diffuse_calibrate = 0
@@ -240,7 +235,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 0
       diffuse_calibrate = 0
@@ -295,7 +289,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       diffuse_calibrate = 0
       diffuse_model = 0
       cal_bp_transfer = 0
@@ -321,7 +314,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 1
       diffuse_calibrate = 0
@@ -348,7 +340,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       snapshot_recalculate = 1
       recalculate_all = 1
       diffuse_calibrate = 0
@@ -494,34 +485,6 @@ pro rlb_fhd_versions
       n_pol = 4
     end
     
-    'rlb_4pol_sim_Nov2017': begin
-      recalculate_all = 1
-      max_sources = 200000
-      calibration_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
-      gain_factor = 0.1
-      deconvolve = 1
-      return_decon_visibilities = 1
-      deconvolution_filter = 'filter_uv_uniform'
-      filter_background = 1
-      return_cal_visibilities = 0
-      snapshot_healpix_export = 1
-      diffuse_calibrate = 0
-      diffuse_model = 0
-      cal_bp_transfer = 0
-      rephase_weights = 0
-      restrict_hpx_inds = 0
-      hpx_radius = 10
-      return_sidelobe_catalog = 1
-      dft_threshold = 0
-      ring_radius = 0
-      write_healpix_fits = 1
-      debug_region_grow = 0
-      n_pol = 4
-      vis_file_list = '/nfs/eor-00/h1/rbyrne/stokes_I_sim.uvfits'
-      remove_sim_flags = 1 ;should be used for simulation
-      max_iter = 100
-    end
-    
     'rlb_GLEAM+Fornax_cal_decon_4pol_Dec2017': begin
       uvfits_version = 5
       uvfits_subversion = 1
@@ -533,7 +496,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0
-      snapshot_healpix_export = 1
       diffuse_calibrate = 0
       diffuse_model = 0
       cal_bp_transfer = 0
@@ -555,7 +517,6 @@ pro rlb_fhd_versions
       ;calibration_catalog_file_path = filepath('master_sgal_cat.sav',root=rootdir('FHD'),subdir='catalog_data')
       calibration_catalog_file_path = filepath('GLEAMIDR4_181_consistent.sav',root=rootdir('FHD'),subdir='catalog_data')
       filter_background = 1
-      snapshot_healpix_export = 1
       diffuse_calibrate = 0
       diffuse_model = 0
       subtract_sidelobe_catalog = filepath('GLEAMIDR4_181_consistent.sav',root=rootdir('FHD'),subdir='catalog_data')
@@ -571,7 +532,6 @@ pro rlb_fhd_versions
       ;calibration_catalog_file_path = filepath('master_sgal_cat.sav',root=rootdir('FHD'),subdir='catalog_data')
       calibration_catalog_file_path = filepath('GLEAMIDR4_181_consistent.sav',root=rootdir('FHD'),subdir='catalog_data')
       filter_background = 1
-      snapshot_healpix_export = 1
       diffuse_calibrate = 0
       diffuse_model = 0
       subtract_sidelobe_catalog = filepath('GLEAMIDR4_181_consistent.sav',root=rootdir('FHD'),subdir='catalog_data')
@@ -579,63 +539,6 @@ pro rlb_fhd_versions
       ring_radius = 0
       debug_region_grow = 0
       recalculate_all = 1
-    end
-    
-    'rlb_4pol_sim_Jan2018': begin
-      recalculate_all = 1
-      max_sources = 200000
-      calibration_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
-      gain_factor = 0.1
-      deconvolve = 1
-      return_decon_visibilities = 1
-      deconvolution_filter = 'filter_uv_uniform'
-      filter_background = 1
-      return_cal_visibilities = 1 ;required for 4pol runs
-      snapshot_healpix_export = 1
-      diffuse_calibrate = 0
-      diffuse_model = 0
-      cal_bp_transfer = 0
-      rephase_weights = 0
-      restrict_hpx_inds = 0
-      hpx_radius = 20
-      return_sidelobe_catalog = 1
-      dft_threshold = 0
-      ring_radius = 0
-      write_healpix_fits = 1
-      debug_region_grow = 0
-      n_pol = 4
-      vis_file_list = '/nfs/eor-00/h1/rbyrne/stokes_I_sim.uvfits'
-      remove_sim_flags = 1 ;should be used for simulation
-    end
-    
-    'rlb_4pol_sim_nocal_Jan2018': begin
-      recalculate_all = 1
-      max_sources = 200000
-      calibration_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
-      model_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
-      gain_factor = 0.1
-      deconvolve = 1
-      return_decon_visibilities = 1
-      deconvolution_filter = 'filter_uv_uniform'
-      filter_background = 1
-      return_cal_visibilities = 0  ; required to be turned on for 4pol normally, is ok to be off in sim
-      snapshot_healpix_export = 1
-      diffuse_calibrate = 0
-      diffuse_model = 0
-      cal_bp_transfer = 0
-      rephase_weights = 0
-      restrict_hpx_inds = 0
-      hpx_radius = 20
-      return_sidelobe_catalog = 1
-      dft_threshold = 0
-      ring_radius = 0
-      write_healpix_fits = 1
-      debug_region_grow = 0
-      n_pol = 4
-      vis_file_list = '/nfs/eor-00/h1/rbyrne/stokes_I_sim.uvfits'
-      remove_sim_flags = 1 ;should be used for simulation
-      calibrate_visibilities = 0
-      model_visibilities = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
     end
     
     'rlb_GLEAM+Fornax_cal_decon_4pol_Jan2018': begin
@@ -649,7 +552,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 1  ; Fixed this
-      snapshot_healpix_export = 1
       diffuse_calibrate = 0
       diffuse_model = 0
       cal_bp_transfer = 0
@@ -665,18 +567,16 @@ pro rlb_fhd_versions
       n_pol = 4
     end
     
-    'rlb_2pol_sim_nocal_Jan2018': begin
+    'rlb_4pol_sim_Jan2018': begin
       recalculate_all = 1
       max_sources = 200000
       calibration_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
-      model_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
       gain_factor = 0.1
       deconvolve = 1
       return_decon_visibilities = 1
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
-      return_cal_visibilities = 0  ; required to be turned on for 4pol normally, is ok to be off in sim
-      snapshot_healpix_export = 1
+      return_cal_visibilities = 1 ;required for 4pol runs
       diffuse_calibrate = 0
       diffuse_model = 0
       cal_bp_transfer = 0
@@ -688,15 +588,13 @@ pro rlb_fhd_versions
       ring_radius = 0
       write_healpix_fits = 1
       debug_region_grow = 0
-      n_pol = 2
-      vis_file_list = '/nfs/eor-00/h1/rbyrne/stokes_I_4pol_sim.uvfits'
+      n_pol = 4
+      vis_file_list = '/nfs/eor-00/h1/rbyrne/stokes_I_sim.uvfits'
       remove_sim_flags = 1 ;should be used for simulation
-      calibrate_visibilities = 0
-      model_visibilities = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
     end
     
     'rlb_2pol_sim_nocal_master_Jan2018': begin
-      recalculate_all = 0
+      recalculate_all = 1
       max_sources = 200000
       calibration_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
       model_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
@@ -706,7 +604,6 @@ pro rlb_fhd_versions
       deconvolution_filter = 'filter_uv_uniform'
       filter_background = 1
       return_cal_visibilities = 0  ; required to be turned on for 4pol normally, is ok to be off in sim
-      snapshot_healpix_export = 1
       diffuse_calibrate = 0
       diffuse_model = 0
       cal_bp_transfer = 0
@@ -723,6 +620,70 @@ pro rlb_fhd_versions
       remove_sim_flags = 1 ;should be used for simulation
       calibrate_visibilities = 0
       model_visibilities = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
+      uvfits_version = 4
+      uvfits_subversion = 1
+    end
+    
+    'rlb_4pol_sim_nocal_fullpol_Jan2018': begin
+      recalculate_all = 1
+      max_sources = 200000
+      calibration_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
+      model_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
+      gain_factor = 0.1
+      deconvolve = 1
+      return_decon_visibilities = 1
+      deconvolution_filter = 'filter_uv_uniform'
+      filter_background = 1
+      return_cal_visibilities = 0  ; required to be turned on for 4pol normally, is ok to be off in sim
+      diffuse_calibrate = 0
+      diffuse_model = 0
+      cal_bp_transfer = 0
+      rephase_weights = 0
+      restrict_hpx_inds = 0
+      hpx_radius = 20
+      return_sidelobe_catalog = 1
+      dft_threshold = 0
+      ring_radius = 0
+      write_healpix_fits = 1
+      debug_region_grow = 0
+      n_pol = 4
+      vis_file_list = '/nfs/eor-00/h1/rbyrne/sim_visibilities/stokes_I_sim_fullpol_4pol.uvfits'
+      remove_sim_flags = 1 ;should be used for simulation
+      calibrate_visibilities = 0
+      model_visibilities = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
+      uvfits_version = 4
+      uvfits_subversion = 1
+    end
+    
+    'rlb_2pol_sim_nocal_fullpol_Jan2018': begin
+      recalculate_all = 1
+      max_sources = 200000
+      calibration_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
+      model_catalog_file_path = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
+      gain_factor = 0.1
+      deconvolve = 1
+      return_decon_visibilities = 1
+      deconvolution_filter = 'filter_uv_uniform'
+      filter_background = 1
+      return_cal_visibilities = 0  ; required to be turned on for 4pol normally, is ok to be off in sim
+      diffuse_calibrate = 0
+      diffuse_model = 0
+      cal_bp_transfer = 0
+      rephase_weights = 0
+      restrict_hpx_inds = 0
+      hpx_radius = 20
+      return_sidelobe_catalog = 1
+      dft_threshold = 0
+      ring_radius = 0
+      write_healpix_fits = 1
+      debug_region_grow = 0
+      n_pol = 2
+      vis_file_list = '/nfs/eor-00/h1/rbyrne/sim_visibilities/stokes_I_sim_fullpol_4pol.uvfits'
+      remove_sim_flags = 1 ;should be used for simulation
+      calibrate_visibilities = 0
+      model_visibilities = '/nfs/eor-00/h1/rbyrne/catalogs/sim_cal_catalog.sav'
+      uvfits_version = 4
+      uvfits_subversion = 1
     end
     
   endcase
@@ -760,6 +721,8 @@ pro rlb_fhd_versions
   print,"Keywords set in wrapper:"
   print,structure_to_text(extra)
   print,""
+  
+  n_pol=4
   
   general_obs,_Extra=extra
   
