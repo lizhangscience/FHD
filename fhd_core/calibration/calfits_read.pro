@@ -36,6 +36,10 @@ Function calfits_read,file_path_fits,obs,params,silent=silent,_Extra=extra
   freq_index = Min(where(strmatch(data_types, 'freqs', /FOLD_CASE) EQ 1))
   time_index = Min(where(strmatch(data_types, 'time', /FOLD_CASE) EQ 1))
   jones_index = Min(where(strmatch(data_types, 'jones', /FOLD_CASE) EQ 1))
+  spw_index = Min(where(strmatch(data_types, 'if', /FOLD_CASE) EQ 1), count_spw)
+  if count_spw eq 0 then spw_index = Min(where(strmatch(data_types, 'nspw', /FOLD_CASE) EQ 1), count_spw)
+  nspw = sxpar(data_header0,strjoin('naxis'+strtrim((spw_index+1),2)))
+  if nspw gt 1 then message, 'More than one spectral window is not supported at this time.'
   data_narray = sxpar(data_header0,strjoin('crval'+strtrim((data_index+1),2))) ;real(gain), imag(gain), flags, (optional input flags), quality
   freq_start = sxpar(data_header0,strjoin('crval'+strtrim((freq_index+1),2)))
   time_start = sxpar(data_header0,strjoin('crval'+strtrim((time_index+1),2)))
@@ -45,7 +49,7 @@ Function calfits_read,file_path_fits,obs,params,silent=silent,_Extra=extra
   ;*********
   
   ;*********Check parameters
-  IF (data_index NE 0) OR (ant_index NE 4) OR (freq_index NE 3) OR (time_index NE 2) OR (jones_index NE 1) then $
+  IF (data_index NE 0) OR (ant_index NE 5) OR (spw_index NE 4) OR (freq_index NE 3) OR (time_index NE 2) OR (jones_index NE 1) then $
     message, 'Calfits file does not appear to adhere to standard. Please see github:pyuvdata/docs/references'
   if ~keyword_set(gain_convention) then gain_convention = 'divide' ;default of the gain convention if undefined
   
@@ -56,7 +60,8 @@ Function calfits_read,file_path_fits,obs,params,silent=silent,_Extra=extra
     if ~keyword_set(silent) then print, 'More polarizations in calibration fits file than in observation analysis. Reducing calibration to match obs.'
     data_dims[1] = obs.n_pol
     jones_type_matrix = jones_type_matrix[0:obs.n_pol-1]
-    data_array = data_array[*,0:obs.n_pol-1,*,*,*]
+    ;; only support 1 spw axis
+    data_array = data_array[*,0:obs.n_pol-1,*,*,0,*]
   endif else if data_dims[1] LT obs.n_pol then message, 'Not enough polarizations defined in calibration fits file.'
   
   ;Switch the pol convention to FHD standard if necessary
