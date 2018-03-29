@@ -91,8 +91,8 @@ FOR map_i=0,n_map-1 DO BEGIN
             ele_out/2. - elements_hpx/2.: ele_out/2. + elements_hpx/2. -1] = model_uv
     ENDELSE
     ; Scaling accounts for the change in grid size
-    scale = (dimension_hpx*elements_hpx)/float(dim_out*ele_out)
-    model_img = scale*FFT(fft_shift(model_uv_full),/inverse)
+    scale = sqrt((dimension_hpx*elements_hpx)/float(dim_out*ele_out))
+    model_img = FFT(fft_shift(model_uv_full*scale),/inverse)
     print, 'Scale=',scale
     print, 'Variance of resized image: ', variance(model_img)
 
@@ -103,6 +103,6 @@ pixel_area_factor=pixel_area(obs,/relative)
 IF Ptr_flag THEN BEGIN
     FOR p_i=0L,N_Elements(map_interp)-1 DO *map_interp[p_i]*=weight_invert(pixel_area_factor)
 ENDIF ELSE map_interp*=weight_invert(pixel_area_factor)
-save, map_interp, big_model_img, filename='model_images_nside'+number_formatter(nside)+'.sav'
+save, map_interp, big_model_img,image_mask, filename='model_images_newscale_nside'+number_formatter(nside)+'.sav'
 RETURN,map_interp
 END
