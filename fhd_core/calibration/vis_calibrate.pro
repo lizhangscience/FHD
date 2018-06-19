@@ -16,65 +16,12 @@ FUNCTION vis_calibrate,vis_ptr,cal,obs,status_str,psf,params,jones,vis_weight_pt
   IF N_Elements(flag_calibration) EQ 0 THEN flag_calibration=1
   
   IF Keyword_Set(transfer_calibration) THEN BEGIN
-    IF size(transfer_calibration,/type) EQ 7 THEN BEGIN
-      cal_file_use=transfer_calibration
-      IF file_test(cal_file_use,/directory) THEN BEGIN
-        fhd_save_io,file_path_fhd=file_path_fhd,transfer=transfer_calibration,var='cal',path_use=cal_file_use2,_Extra=extra
-        cal_file_use2+='.sav'
-        IF file_test(cal_file_use2) THEN cal_file_use=cal_file_use2 ELSE BEGIN
-          print,'File:'+cal_file_use2+' not found!'
-          error=1
-          RETURN,vis_ptr
-        ENDELSE
-      ENDIF ELSE BEGIN
-        IF file_test(cal_file_use) EQ 0 THEN BEGIN
-          fhd_save_io,file_path_fhd=cal_file_use,var='cal',path_use=cal_file_use2,_Extra=extra
-          cal_file_use2+='.sav'
-          IF file_test(cal_file_use2) THEN cal_file_use=cal_file_use2 ELSE BEGIN
-            print,'File:'+cal_file_use2+' not found!'
-            error=1
-            RETURN,vis_ptr
-          ENDELSE
-        ENDIF
-      ENDELSE
-      CASE StrLowCase(Strmid(cal_file_use[0],3,/reverse)) OF
-        '.sav':BEGIN
-          cal=getvar_savefile(cal_file_use,'cal')
-          gain_arr_ptr=cal.gain
-          IF ~Keyword_Set(cal.cal_origin) THEN cal.cal_origin=cal_file_use
-          cal=fhd_struct_init_cal(obs,params,calibration_origin=cal.cal_origin,gain_arr_ptr=cal.gain,_Extra=extra)
-        END
-        '.txt':BEGIN
-          textfast,gain_arr,/read,file_path=cal_file_use
-          gain_arr_ptr=Ptr_new(gain_arr)
-          cal=fhd_struct_init_cal(obs,params,calibration_origin=cal_file_use,gain_arr_ptr=gain_arr_ptr,_Extra=extra)
-        END
-        '.npz':BEGIN
-          gain_arr=read_numpy(cal_file_use)
-          gain_arr_ptr=Ptr_new(gain_arr)
-          cal=fhd_struct_init_cal(obs,params,calibration_origin=cal_file_use,gain_arr_ptr=gain_arr_ptr,_Extra=extra)
-        END
-        '.npy':BEGIN
-          gain_arr=read_numpy(cal_file_use)
-          gain_arr_ptr=Ptr_new(gain_arr)
-          cal=fhd_struct_init_cal(obs,params,calibration_origin=cal_file_use,gain_arr_ptr=gain_arr_ptr,_Extra=extra)
-        END
-        'fits':BEGIN ;calfits format
-          cal = calfits_read(cal_file_use,obs,params,silent=silent,_Extra=extra)
-        END
-        ELSE: BEGIN
-          print,'Unknown file format: ',cal_file_use
-          error=1
-          RETURN,vis_ptr
-        ENDELSE
-      ENDCASE
-    ENDIF
-
-    vis_cal=vis_calibration_apply(vis_ptr,cal)
-    timing=Systime(1)-t0_0
-    RETURN,vis_cal
+    cal = transfer_calibration(obs, params, transfer_calibration, file_path_fhd=file_path_fhd,
+       silent=silent, error=error, _Extra=extra)
+    vis_cal = vis_calibration_apply(vis_ptr,cal)
+    timing = Systime(1)-t0_0
+    RETURN, vis_cal
   ENDIF
-  
 
   if ~keyword_set(model_transfer) then begin
     vis_model_arr=vis_source_model(cal.skymodel,obs,status_str,psf,params,vis_weight_ptr,cal,jones,model_uv_arr=model_uv_arr,/fill_model_vis,$
@@ -257,28 +204,7 @@ FUNCTION vis_calibrate,vis_ptr,cal,obs,status_str,psf,params,jones,vis_weight_pt
     IF tag_exist(obs,'residual') THEN obs.residual=1
   ENDIF
   IF ~Keyword_Set(return_cal_visibilities) THEN undefine_fhd,vis_model_arr
-
-  ;Statistics for metadata reporting
-  cal_gain_avg=Fltarr(nc_pol)
-  cal_res_avg=Fltarr(nc_pol)
-  cal_res_restrict=Fltarr(nc_pol)
-  cal_res_stddev=Fltarr(nc_pol)
-  FOR pol_i=0,nc_pol-1 DO BEGIN
-    tile_use_i=where((*obs.baseline_info).tile_use,n_tile_use)
-    freq_use_i=where((*obs.baseline_info).freq_use,n_freq_use)
-    IF n_tile_use EQ 0 OR n_freq_use EQ 0 THEN CONTINUE
-    gain_ref=extract_subarray(*cal.gain[pol_i],freq_use_i,tile_use_i)
-    gain_res=extract_subarray(*cal_res.gain[pol_i],freq_use_i,tile_use_i)
-    cal_gain_avg[pol_i]=Mean(Abs(gain_ref))
-    cal_res_avg[pol_i]=Mean(Abs(gain_res))
-    resistant_mean,Abs(gain_res),2,res_mean
-    cal_res_restrict[pol_i]=res_mean
-    cal_res_stddev[pol_i]=Stddev(Abs(gain_res))
-  ENDFOR
-  IF Tag_exist(cal,'Mean_gain') THEN cal.mean_gain=cal_gain_avg
-  IF Tag_exist(cal,'Mean_gain_residual') THEN cal.mean_gain_residual=cal_res_avg
-  IF Tag_exist(cal,'Mean_gain_restrict') THEN cal.mean_gain_restrict=cal_res_restrict
-  IF Tag_exist(cal,'Stddev_gain_residual') THEN cal.stddev_gain_residual=cal_res_stddev
+  calculate_cal_stats, obs, cal
 
   t3=Systime(1)-t3_a
   timing=Systime(1)-t0_0

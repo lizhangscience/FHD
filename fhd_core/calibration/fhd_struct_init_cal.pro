@@ -1,6 +1,7 @@
 FUNCTION fhd_struct_init_cal, obs, params, skymodel, gain_arr_ptr=gain_arr_ptr, $
     n_pol=n_pol, n_freq=n_freq, n_tile=n_tile, n_time=n_time, $
     tile_A=tile_A, tile_B=tile_B, freq=freq, bin_offset=bin_offset, tile_names=tile_names, $
+    cross_phase=cross_phase, stokes_mix_phase=stokes_mix_phase,$
     u_loc=u_loc, v_loc=v_loc, min_cal_baseline=min_cal_baseline, max_cal_baseline=max_cal_baseline, $
     n_vis_cal=n_vis_cal, cal_time_average=cal_time_average, ref_antenna=ref_antenna, $
     cal_convergence_threshold=cal_convergence_threshold, max_cal_iter=max_cal_iter, $
@@ -17,6 +18,8 @@ IF N_Elements(tile_B) EQ 0 THEN tile_B=(*obs.baseline_info).tile_B
 IF N_Elements(freq) EQ 0 THEN freq=(*obs.baseline_info).freq
 IF N_Elements(bin_offset) EQ 0 THEN bin_offset=(*obs.baseline_info).bin_offset
 IF N_Elements(tile_names) EQ 0 THEN tile_names=(*obs.baseline_info).tile_names
+IF N_Elements(cross_phase) EQ 0 THEN cross_phase = 0.
+IF N_Elements(stokes_mix_phase) EQ 0 THEN stokes_mix_phase = 0.
 IF N_Elements(u_loc) EQ 0 THEN u_loc=params.uu
 IF N_Elements(v_loc) EQ 0 THEN v_loc=params.vv
 
@@ -62,7 +65,8 @@ auto_scale=Fltarr(2)
 cal_struct={n_pol:n_pol, n_freq:n_freq, n_tile:n_tile, n_time:n_time, uu:u_loc, vv:v_loc,$
     auto_initialize:auto_initialize, max_iter:max_cal_iter, phase_iter:phase_fit_iter,$
     tile_A:tile_A, tile_B:tile_B, tile_names:tile_names, bin_offset:bin_offset, freq:freq, gain:gain_arr_ptr,$
-    gain_residual:gain_residual, auto_scale:auto_scale, auto_params:auto_params, cross_phase:0.0, stokes_mix_phase:0.0,$
+    gain_residual:gain_residual, auto_scale:auto_scale, auto_params:auto_params,$
+    cross_phase:cross_phase, stokes_mix_phase:stokes_mix_phase,$
     min_cal_baseline:min_cal_baseline, max_cal_baseline:max_cal_baseline, n_vis_cal:n_vis_cal,$
     time_avg:cal_time_average, min_solns:min_cal_solutions, ref_antenna:ref_antenna,$
     ref_antenna_name:ref_antenna_name, conv_thresh:cal_convergence_threshold, convergence:convergence,$
