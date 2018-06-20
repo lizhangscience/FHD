@@ -16,8 +16,7 @@ FUNCTION vis_calibrate,vis_ptr,cal,obs,status_str,psf,params,jones,vis_weight_pt
   IF N_Elements(flag_calibration) EQ 0 THEN flag_calibration=1
   
   IF Keyword_Set(transfer_calibration) THEN BEGIN
-    cal = transfer_calibration(obs, params, transfer_calibration, file_path_fhd=file_path_fhd,
-       silent=silent, error=error, _Extra=extra)
+    cal = transfer_cal(obs, params, transfer_calibration, file_path_fhd=file_path_fhd, silent=silent, error=error, _Extra=extra)
     vis_cal = vis_calibration_apply(vis_ptr,cal)
     timing = Systime(1)-t0_0
     RETURN, vis_cal
