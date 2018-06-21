@@ -24,8 +24,6 @@ IF size(transfer_calibration,/type) EQ 7 THEN BEGIN
   CASE StrLowCase(Strmid(cal_file_use[0],3,/reverse)) OF
     '.sav':BEGIN
       cal=getvar_savefile(cal_file_use,'cal')
-      cal.skymodel = fhd_struct_init_skymodel(obs, catalog_path=cal.skymodel.catalog_name,$
-        galaxy_model=cal.skymodel.galaxy_model, diffuse_model=cal.skymodel.diffuse_model)
     END
     '.txt':BEGIN
       textfast,gain_arr,/read,file_path=cal_file_use
@@ -54,8 +52,6 @@ IF size(transfer_calibration,/type) EQ 7 THEN BEGIN
 ENDIF ELSE BEGIN
     print, "Transferring existing cal structure for calibration."
     cal = pointer_copy(transfer_calibration)
-    cal.skymodel = fhd_struct_init_skymodel(obs, catalog_path=cal.skymodel.catalog_name, force_n_src=cal.skymodel.n_sources,$
-      galaxy_model=cal.skymodel.galaxy_model, diffuse_model=cal.skymodel.diffuse_model)
 ENDELSE
 
 calculate_cal_stats, obs, cal

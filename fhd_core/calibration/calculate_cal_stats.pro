@@ -11,7 +11,7 @@ PRO calculate_cal_stats, obs, cal
     freq_use_i=where((*obs.baseline_info).freq_use,n_freq_use)
     IF n_tile_use EQ 0 OR n_freq_use EQ 0 THEN CONTINUE
     gain_ref=extract_subarray(*cal.gain[pol_i],freq_use_i,tile_use_i)
-    gain_res=extract_subarray(*cal_res.gain[pol_i],freq_use_i,tile_use_i)
+    gain_res=extract_subarray(*cal.gain_residual[pol_i],freq_use_i,tile_use_i)
     cal_gain_avg[pol_i]=Mean(Abs(gain_ref))
     cal_res_avg[pol_i]=Mean(Abs(gain_res))
     resistant_mean,Abs(gain_res),2,res_mean
@@ -22,3 +22,5 @@ PRO calculate_cal_stats, obs, cal
   cal.mean_gain_residual=cal_res_avg
   cal.mean_gain_restrict=cal_res_restrict
   cal.stddev_gain_residual=cal_res_stddev
+  
+end
