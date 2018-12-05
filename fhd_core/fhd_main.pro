@@ -43,6 +43,7 @@ IF data_flag LE 0 THEN BEGIN
     uvfits_read,hdr,params,layout,vis_arr,vis_weights,file_path_vis=file_path_vis,n_pol=n_pol,silent=silent,error=error,_Extra=extra
     IF Keyword_Set(error) THEN BEGIN
       print,"Error occured while reading uvfits data. Returning."
+      IF Keyword_Set(!Journal) THEN Journal ;write and close log file if present
       RETURN
     ENDIF
     fhd_save_io,status_str,layout,var='layout',/compress,file_path_fhd=file_path_fhd,_Extra=extra ;save layout structure right away for debugging. Will be overwritten a few times before the end
@@ -85,6 +86,7 @@ IF data_flag LE 0 THEN BEGIN
             flag_calibration=flag_calibration,_Extra=extra
         IF Keyword_Set(error) THEN BEGIN
             print,"Error occured while attempting to transfer weights. Returning."
+            IF Keyword_Set(!Journal) THEN Journal ;write and close log file if present
             RETURN
         ENDIF
 
@@ -113,6 +115,7 @@ IF data_flag LE 0 THEN BEGIN
         ; This is checked after optionally transfering or modifying the weights, and after writing the settings file.
         error=1
         print,"All tiles flagged! No data left to use. Returning"
+        IF Keyword_Set(!Journal) THEN Journal ;write and close log file if present
         RETURN
     ENDIF
     
@@ -133,6 +136,7 @@ IF data_flag LE 0 THEN BEGIN
         IF ~Keyword_Set(silent) THEN print,String(format='("Calibration timing: ",A)',Strn(cal_timing))
         IF Keyword_Set(error) THEN BEGIN
             print,"Error occured during calibration. Returning."
+            IF Keyword_Set(!Journal) THEN Journal ;write and close log file if present
             RETURN
         ENDIF
         fhd_save_io,status_str,cal,var='cal',/compress,file_path_fhd=file_path_fhd,_Extra=extra
@@ -175,6 +179,7 @@ IF data_flag LE 0 THEN BEGIN
     
     IF Keyword_Set(error) THEN BEGIN
       print,"Error occured during source modeling"
+      IF Keyword_Set(!Journal) THEN Journal ;write and close log file if present
       RETURN
     ENDIF
     
