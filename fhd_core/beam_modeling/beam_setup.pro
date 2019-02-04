@@ -4,7 +4,7 @@ FUNCTION beam_setup,obs,status_str,antenna,file_path_fhd=file_path_fhd,restore_l
   swap_pol=swap_pol,no_save=no_save,beam_pol_test=beam_pol_test,$
   beam_model_version=beam_model_version,beam_dim_fit=beam_dim_fit,save_antenna_model=save_antenna_model,$
   interpolate_kernel=interpolate_kernel,transfer_psf=transfer_psf,beam_per_baseline=beam_per_baseline,$
-  _Extra=extra
+  freq_start=freq_start,freq_end=freq_end,_Extra=extra
 
   compile_opt idl2,strictarrsubs
   t00=Systime(1)
@@ -51,6 +51,43 @@ FUNCTION beam_setup,obs,status_str,antenna,file_path_fhd=file_path_fhd,restore_l
 
   freq_bin_i=(*obs.baseline_info).fbin_i
   nfreq_bin=Max(freq_bin_i)+1
+
+  ;Restrict the beam model to not create unnecessary freq dependence if there are flags
+  IF Keyword_Set(freq_start) or Keyword_Set(freq_end) THEN BEGIN
+    frequency_array_MHz=((*obs.baseline_info).freq)/1E6
+    fbin_i = freq_bin_i
+    
+    if keyword_set(freq_start) then begin
+      freq_cut=where(frequency_array_MHz LT freq_start,nf_cut_start)
+      IF (nf_cut_start GT 0) then begin
+        ;Don't cut the beam in the middle of a freq bin for consistency
+        freq_cut=where(fbin_i LT max(fbin_i[freq_cut]),nf_cut_start2,complement=freq_stay)
+        IF (nf_cut_start2 GT 0) then begin
+          fbin_i[freq_cut]=0
+          ;Renormalize the beam grouping
+          freq_min = min(fbin_i[freq_stay]) - 1.
+          fbin_i[freq_stay] -= freq_min
+        ENDIF
+      ENDIF
+    endif
+    
+    if keyword_set(freq_end) then begin
+      ;Don't cut the beam in the middle of a freq bin for consistency
+      freq_cut=where(frequency_array_MHz GT freq_end,nf_cut_end,complement=freq_stay)
+      IF (nf_cut_end GT 0) then begin
+        freq_cut=where(fbin_i GT min(fbin_i[freq_cut]),nf_cut_end2,complement=freq_stay)
+        if (nf_cut_end2) then fbin_i[freq_cut]=0
+      ENDIF
+    endif
+    
+    ;update the obs structure and variables that affect the group id
+    updated_values = {fbin_i:fbin_i}
+    baseline_info = Ptr_new(structure_update(*obs.baseline_info, _Extra=updated_values))
+    updated_values = {baseline_info:baseline_info}
+    obs = structure_update(obs, _Extra=updated_values)
+    freq_bin_i=fbin_i
+    nfreq_bin=Max(freq_bin_i)+1
+  ENDIF
 
   tile_A=(*obs.baseline_info).tile_A
   tile_B=(*obs.baseline_info).tile_B

@@ -47,7 +47,7 @@ IF data_flag LE 0 THEN BEGIN
       RETURN
     ENDIF
     fhd_save_io,status_str,layout,var='layout',/compress,file_path_fhd=file_path_fhd,_Extra=extra ;save layout structure right away for debugging. Will be overwritten a few times before the end
-    
+   
     ;In situ simulations given input model visibilities as dirty visilibilities
     If keyword_set(in_situ_sim_input) then $
         in_situ_sim_setup, in_situ_sim_input, vis_arr, vis_weights, flag_calibration,n_pol=n_pol,enhance_eor=enhance_eor, $
@@ -75,7 +75,8 @@ IF data_flag LE 0 THEN BEGIN
     
     ;Read in or construct a new beam model. Also sets up the structure PSF
     print,'Calculating beam model'
-    psf=beam_setup(obs,status_str,antenna,file_path_fhd=file_path_fhd,restore_last=0,silent=silent,timing=t_beam,no_save=no_save,_Extra=extra)
+    psf=beam_setup(obs,status_str,antenna,file_path_fhd=file_path_fhd,restore_last=0,silent=silent,timing=t_beam,no_save=no_save,$
+      freq_start=freq_start,freq_end=freq_end,_Extra=extra)
     IF Keyword_Set(t_beam) THEN IF ~Keyword_Set(silent) THEN print,'Beam modeling time: ',t_beam
     jones=fhd_struct_init_jones(obs,status_str,file_path_fhd=file_path_fhd,restore=0,mask=beam_mask,_Extra=extra)
 
@@ -152,7 +153,7 @@ IF data_flag LE 0 THEN BEGIN
           message, "cal_stop initiated"
         endif
     ENDIF
-    
+
     IF Keyword_Set(flag_visibilities) THEN BEGIN
         print,'Flagging anomalous data'
         vis_flag,vis_arr,vis_weights,obs,psf,params,_Extra=extra
