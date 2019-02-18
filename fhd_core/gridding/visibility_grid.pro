@@ -77,7 +77,7 @@ frequency_array=(*obs.baseline_info).freq
 frequency_array=frequency_array[fi_use]
 
 complex_flag=psf.complex_flag
-psf_dim=psf.dim
+psf_dim=long(psf.dim)
 psf_resolution=psf.resolution
 group_arr=reform(psf.id[polarization,freq_bin_i[fi_use],bi_use])
 beam_arr=*psf.beam_ptr
