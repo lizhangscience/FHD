@@ -3,7 +3,7 @@ PRO healpix_snapshot_cube_generate,obs_in,status_str,psf_in,cal,params,vis_arr,v
     ps_kbinsize=ps_kbinsize,ps_kspan=ps_kspan,ps_beam_threshold=ps_beam_threshold,ps_nfreq_avg=ps_nfreq_avg,$
     rephase_weights=rephase_weights,n_avg=n_avg,vis_weights=vis_weights,split_ps_export=split_ps_export,$
     restrict_hpx_inds=restrict_hpx_inds,hpx_radius=hpx_radius,cmd_args=cmd_args,save_uvf=save_uvf,save_imagecube=save_imagecube,$
-    obs_out=obs_out,psf_out=psf_out,ps_tile_flag_list=ps_tile_flag_list,_Extra=extra
+    obs_out=obs_out,psf_out=psf_out,ps_tile_flag_list=ps_tile_flag_list,stokes_hpx=stokes_hpx,jones=jones,_Extra=extra
     
   t0=Systime(1)
   
@@ -157,7 +157,70 @@ PRO healpix_snapshot_cube_generate,obs_in,status_str,psf_in,cal,params,vis_arr,v
     variance_hpx_arr=Ptrarr(n_pol,n_freq_use,/allocate)
     beam_hpx_arr=Ptrarr(n_pol,n_freq_use,/allocate)
     t_hpx0=Systime(1)
-    
+   
+    if keyword_set(stokes_hpx) then begin
+      ;converts [xx,yy,{xy,yx}] to [I,Q,{U,V}] 
+      if n_pol EQ 2 then pol_names=['I','Q']
+      if n_pol EQ 4 then pol_names=['I','Q','U','V']
+      inds=jones.inds
+      p_map=jones.Jmat
+      p_corr=jones.Jinv
+      dimension=jones.dimension
+      elements=jones.elements
+
+      n_pix=N_Elements(inds)
+
+      stokes_list1=[0,0,2,2]
+      stokes_list2=[1,1,3,3]
+      sign=[1,-1,1,-1]
+      
+      for freq_i=0, n_freq_use-1 do begin      
+        weights_arr_sky=Ptrarr(n_pol)
+        variance_arr_sky=Ptrarr(n_pol)
+        IF residual_flag THEN residual_arr_sky=Ptrarr(n_pol)
+        IF dirty_flag THEN dirty_arr_sky=Ptrarr(n_pol)
+        IF model_flag THEN model_arr_sky=Ptrarr(n_pol)
+        ;stokes I can have proper inverse-variance weighting. (not used!)
+        ; All other polarizations need to be converted to 'true sky' frame before they can be added
+
+        ;instrumental -> Stokes
+        FOR sky_pol=0,n_pol-1 DO BEGIN
+          weights_arr_sky[sky_pol]=Ptr_new(fltarr(dimension,elements))
+          variance_arr_sky[sky_pol]=Ptr_new(fltarr(dimension,elements))
+          IF residual_flag THEN residual_arr_sky[sky_pol]=Ptr_new(fltarr(dimension,elements))
+          IF dirty_flag THEN dirty_arr_sky[sky_pol]=Ptr_new(fltarr(dimension,elements))
+          IF model_flag THEN model_arr_sky[sky_pol]=Ptr_new(fltarr(dimension,elements))
+            
+          FOR instr_pol=0,n_pol-1 DO BEGIN
+            (*weights_arr_sky[sky_pol])[inds]+=(*weights_arr1[instr_pol,freq_i])*weight_invert(*p_corr[instr_pol,sky_pol])
+            (*variance_arr_sky[sky_pol])[inds]+=(*variance_arr1[instr_pol,freq_i])*weight_invert(*p_corr[instr_pol,sky_pol])
+            IF residual_flag THEN (*residual_arr_sky[sky_pol])[inds]+=(*residual_arr1[instr_pol,freq_i])*weight_invert(*p_corr[instr_pol,sky_pol])
+            IF dirty_flag THEN (*dirty_arr_sky[sky_pol])[inds]+=(*dirty_arr1[instr_pol,freq_i])*weight_invert(*p_corr[instr_pol,sky_pol])
+            IF model_flag THEN (*model_arr_sky[sky_pol])[inds]+=(*model_arr1[instr_pol,freq_i])*weight_invert(*p_corr[instr_pol,sky_pol])
+          ENDFOR
+        ENDFOR
+        FOR pol_i=0,n_pol-1 DO BEGIN
+          weights_arr1[pol_i,freq_i]=$
+            Ptr_new((*weights_arr_sky[stokes_list1[pol_i]])+sign[pol_i]*(*weights_arr_sky[stokes_list2[pol_i]]))
+          variance_arr1[pol_i,freq_i]=$
+            Ptr_new((*variance_arr_sky[stokes_list1[pol_i]])+sign[pol_i]*(*variance_arr_sky[stokes_list2[pol_i]]))
+          IF residual_flag THEN residual_arr1[pol_i,freq_i]=$
+            Ptr_new((*residual_arr_sky[stokes_list1[pol_i]])+sign[pol_i]*(*residual_arr_sky[stokes_list2[pol_i]]))
+          IF dirty_flag THEN dirty_arr1[pol_i,freq_i]=$
+            Ptr_new((*dirty_arr_sky[stokes_list1[pol_i]])+sign[pol_i]*(*dirty_arr_sky[stokes_list2[pol_i]]))
+          IF model_flag THEN model_arr1[pol_i,freq_i]=$
+            Ptr_new((*model_arr_sky[stokes_list1[pol_i]])+sign[pol_i]*(*model_arr_sky[stokes_list2[pol_i]]))
+        ENDFOR
+      endfor
+      
+      Ptr_free,weights_arr_sky,variance_arr_sky
+      IF residual_flag THEN Ptr_free, residual_flag
+      IF dirty_flag THEN Ptr_free, dirty_flag
+      IF model_flag THEN Ptr_free, model_flag   
+    endif
+
+
+ 
     IF Keyword_Set(save_imagecube) THEN BEGIN
         FOR pol_i=0,n_pol-1 DO FOR freq_i=0,n_freq_use-1 DO BEGIN
           *weights_hpx_arr[pol_i,freq_i]=healpix_cnv_apply((*weights_arr1[pol_i,freq_i]),hpx_cnv)
@@ -212,6 +275,7 @@ PRO healpix_snapshot_cube_generate,obs_in,status_str,psf_in,cal,params,vis_arr,v
         
         ;call fhd_save_io first to obtain the correct path. Will NOT update status structure yet
         fhd_save_io,status_str,file_path_fhd=file_path_fhd,var=cube_name[iter],pol_i=pol_i,path_use=path_use,/no_save,_Extra=extra 
+        if keyword_Set(stokes_hpx) then path_use = path_use.remove(-2) + pol_names[pol_i]
         IF file_test(file_dirname(path_use)) EQ 0 THEN file_mkdir,file_dirname(path_use)
         save,filename=path_use+'.sav',/compress,dirty_cube,model_cube,weights_cube,variance_cube,res_cube,beam_squared_cube,$
             obs,nside,hpx_inds,n_avg
