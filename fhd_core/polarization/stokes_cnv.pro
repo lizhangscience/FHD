@@ -16,7 +16,7 @@ IF Min(Ptr_valid(beam_arr)) EQ 0 THEN BEGIN
 ENDIF ELSE BEGIN
     n_pol=N_Elements(beam_arr)
     beam_use=pointer_copy(beam_arr)
-    IF Keyword_Set(square) THEN FOR ii=0L,n_pol-1 DO *beam_use[ii]=(*beam_use[ii])*(reverse(reverse(*beam_use[ii]),2))
+    IF Keyword_Set(square) THEN FOR ii=0L,n_pol-1 DO *beam_use[ii]=*beam_use[ii]^2.
 ENDELSE
 IF N_Elements(beam_threshold) EQ 0 THEN beam_threshold=1E-2
 IF Keyword_Set(square) THEN beam_threshold_use=beam_threshold^2 ELSE beam_threshold_use=beam_threshold

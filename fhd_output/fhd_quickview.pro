@@ -120,7 +120,7 @@ beam_base_out=Ptrarr(n_pol,/allocate)
 beam_correction_out=Ptrarr(n_pol,/allocate)
 IF N_Elements(beam_arr) EQ 0 THEN BEGIN
     beam_arr=Ptrarr(n_pol,/allocate)
-    FOR pol_i=0,n_pol-1 DO *beam_arr[pol_i]=beam_image(psf,obs,pol_i=pol_i,square=0)
+    FOR pol_i=0,n_pol-1 DO *beam_arr[pol_i]=beam_image(psf,obs,pol_i=pol_i,square=0,use_conjugate=1) ;conjugate beam is required for holographic-to-true sky conversion
 ENDIF
 FOR pol_i=0,n_pol-1 DO BEGIN
     *beam_base_out[pol_i]=Rebin(*beam_arr[pol_i],dimension,elements)*horizon_mask ;should be fine even if pad_uv_image is not set

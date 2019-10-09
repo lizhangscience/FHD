@@ -16,7 +16,8 @@
 ;
 ; :Author: isullivan May 4, 2012
 ;-
-FUNCTION beam_image,psf,obs,pol_i=pol_i,freq_i=freq_i,dimension=dimension,elements=elements,abs=abs,square=square
+FUNCTION beam_image,psf,obs,pol_i=pol_i,freq_i=freq_i,dimension=dimension,elements=elements,abs=abs,square=square,$
+  use_conjugate=use_conjugate
 compile_opt idl2,strictarrsubs  
 
 IF N_Elements(pol_i) EQ 0 THEN pol_i=0
@@ -104,9 +105,15 @@ ENDIF ELSE BEGIN
         beam_base_uv=complexarr(psf_dim,psf_dim)
         FOR fi=0,n_freq_bin-1 DO BEGIN
             beam_single=Complexarr(psf_dim,psf_dim)
-            FOR gi=0,n_groups-1 DO BEGIN
-                beam_single+=Reform(*(*beam_arr[pol_i,fi,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim)
-            ENDFOR
+            IF keyword_set(use_conjugate) THEN BEGIN
+                FOR gi=0,n_groups-1 DO BEGIN
+                    beam_single+=Reform(Conj(*(*beam_arr[pol_i,fi,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim))
+                ENDFOR
+            ENDIF ELSE BEGIN
+                FOR gi=0,n_groups-1 DO BEGIN
+                    beam_single+=Reform(*(*beam_arr[pol_i,fi,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim)
+                ENDFOR
+            ENDELSE
             beam_single/=Total(group_n[gi_use])
             beam_base_uv+=beam_single
             n_bin_use+=1.*freq_norm[fi]
@@ -121,9 +128,15 @@ ENDIF ELSE BEGIN
             IF N_Elements(freq_i) GT 0 THEN IF Total(freq_i EQ fi) EQ 0 THEN CONTINUE
             fbin=freq_bin_i[fi]
             beam_single=Complexarr(psf_dim,psf_dim)
-            FOR gi=0,n_groups-1 DO BEGIN
-                beam_single+=Reform(*(*beam_arr[pol_i,fbin,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim)
-            ENDFOR
+            IF keyword_set(use_conjugate) THEN BEGIN
+                FOR gi=0,n_groups-1 DO BEGIN
+                    beam_single+=Reform(Conj(*(*beam_arr[pol_i,fbin,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim))
+                ENDFOR
+            ENDIF ELSE BEGIN
+                FOR gi=0,n_groups-1 DO BEGIN
+                    beam_single+=Reform(*(*beam_arr[pol_i,fbin,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim)
+                ENDFOR
+            ENDELSE
             beam_single/=Total(group_n[gi_use])
             beam_base_uv+=beam_single
             n_bin_use+=1.*freq_norm[fbin]
