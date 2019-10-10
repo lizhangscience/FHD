@@ -107,7 +107,7 @@ ENDIF ELSE BEGIN
             beam_single=Complexarr(psf_dim,psf_dim)
             IF keyword_set(use_conjugate) THEN BEGIN
                 FOR gi=0,n_groups-1 DO BEGIN
-                    beam_single+=Reform(Conj(*(*beam_arr[pol_i,fi,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim))
+                    beam_single+=Conj(Reform(*(*beam_arr[pol_i,fi,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim))
                 ENDFOR
             ENDIF ELSE BEGIN
                 FOR gi=0,n_groups-1 DO BEGIN
@@ -130,7 +130,7 @@ ENDIF ELSE BEGIN
             beam_single=Complexarr(psf_dim,psf_dim)
             IF keyword_set(use_conjugate) THEN BEGIN
                 FOR gi=0,n_groups-1 DO BEGIN
-                    beam_single+=Reform(Conj(*(*beam_arr[pol_i,fbin,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim))
+                    beam_single+=Conj(Reform(*(*beam_arr[pol_i,fbin,gi_ref[gi]])[rbin,rbin]*group_n[gi_use[gi]],psf_dim,psf_dim))
                 ENDFOR
             ENDIF ELSE BEGIN
                 FOR gi=0,n_groups-1 DO BEGIN
