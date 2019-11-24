@@ -21,7 +21,9 @@ FOR pol_i=0,n_ant_pol-1 DO BEGIN
     WHILE n_ungrouped GT 0 DO BEGIN
         ref_i=ungrouped_i[0]
         antenna[ref_i].group_id[pol_i]=gi
-        FOR ug_i=1L,n_ungrouped-1 DO IF Total(Abs(*antenna[ungrouped_i[ug_i]].gain[pol_i] - *antenna[ref_i].gain[pol_i])) EQ 0 THEN antenna[ungrouped_i[ug_i]].group_id[pol_i]=gi 
+        FOR ug_i=1L,n_ungrouped-1 DO $
+            IF Total(Abs(*antenna[ungrouped_i[ug_i]].gain[pol_i] - *antenna[ref_i].gain[pol_i])) EQ 0 THEN $
+                antenna[ungrouped_i[ug_i]].group_id[pol_i]=gi 
         ungrouped_i=where(antenna.group_id[pol_i] EQ -1,n_ungrouped)
         gi+=1
     ENDWHILE
@@ -42,9 +44,9 @@ CASE beam_model_version OF
             Jmat1=mrdfits(file_path_J_matrix,ext_i,header,status=status,/silent)
             IF ext_i EQ 0 THEN BEGIN
                 n_ang=Float(sxpar(header,'NAXIS2'))
-                Jmat_arr=Complexarr(n_ext,n_ant_pol,n_ant_pol,n_ang)
-                theta_arr=Fltarr(n_ext,n_ang)
-                phi_arr=Fltarr(n_ext,n_ang)
+                Jmat_arr=Dcomplexarr(n_ext,n_ant_pol,n_ant_pol,n_ang)
+                theta_arr=Dblarr(n_ext,n_ang)
+                phi_arr=Dblarr(n_ext,n_ang)
             ENDIF
             theta_arr[ext_i,*]=Jmat1[0,*] ;zenith angle in degrees
             phi_arr[ext_i,*]=Jmat1[1,*] ;azimuth angle in degrees, clockwise from East
@@ -70,7 +72,7 @@ CASE beam_model_version OF
         
     ;    Jmat_return=Ptrarr(n_ant_pol,n_ant_pol)
         Jmat_interp=Ptrarr(n_ant_pol,n_ant_pol,nfreq_bin)
-        FOR p_i=0,n_ant_pol-1 DO FOR p_j=0,n_ant_pol-1 DO FOR freq_i=0L,nfreq_bin-1 DO Jmat_interp[p_i,p_j,freq_i]=Ptr_new(Complexarr(n_ang))
+        FOR p_i=0,n_ant_pol-1 DO FOR p_j=0,n_ant_pol-1 DO FOR freq_i=0L,nfreq_bin-1 DO Jmat_interp[p_i,p_j,freq_i]=Ptr_new(Dcomplexarr(n_ang))
         FOR p_i=0,n_ant_pol-1 DO FOR p_j=0,n_ant_pol-1 DO FOR a_i=0L,n_ang-1 DO BEGIN
             Jmat_single_ang=Interpol(Jmat_arr[*,p_i,p_j,a_i],freq_arr_Jmat,freq_center);*norm_factor
             FOR freq_i=0L,nfreq_bin-1 DO (*Jmat_interp[p_i,p_j,freq_i])[a_i]=Jmat_single_ang[freq_i]
@@ -89,7 +91,7 @@ CASE beam_model_version OF
         IF n_horizon_test GT 0 THEN horizon_mask[horizon_test]=0  
         Jones_matrix=Ptrarr(n_ant_pol,n_ant_pol,nfreq_bin)
         FOR p_i=0,n_ant_pol-1 DO FOR p_j=0,n_ant_pol-1 DO FOR freq_i=0L,nfreq_bin-1 DO $
-            Jones_matrix[p_i,p_j,freq_i]=Ptr_new(Complexarr(psf_image_dim,psf_image_dim))
+            Jones_matrix[p_i,p_j,freq_i]=Ptr_new(Dcomplexarr(psf_image_dim,psf_image_dim))
             
         interp_res=obs.degpix
         angle_slice_i0=Uniq(phi_arr)
@@ -150,7 +152,7 @@ CASE beam_model_version OF
     0: BEGIN
         antenna_height=antenna[0].height
         wavelength=speed_light/freq_center
-        Jones_matrix=antenna.jones
+        Jones_matrix=antenna[0].jones
         FOR freq_i=0,nfreq_bin-1 DO BEGIN
             groundplane=2.*Sin(Cos(za_arr*!DtoR)*(2.*!Pi*(antenna_height)/wavelength[freq_i])) ;should technically have zc_arr, but until that is nonzero this is the same and faster
             groundplane0=2.*Sin(Cos(0.*!DtoR)*2.*!Pi*antenna_height/wavelength[freq_i]) ;normalization factor
@@ -166,7 +168,7 @@ CASE beam_model_version OF
         print,"Using default beam model"
         antenna_height=antenna[0].height
         wavelength=speed_light/freq_center
-        Jones_matrix=antenna.jones
+        Jones_matrix=antenna[0].jones
         FOR freq_i=0,nfreq_bin-1 DO BEGIN
             groundplane=2.*Sin(Cos(za_arr*!DtoR)*(2.*!Pi*(antenna_height)/wavelength[freq_i])) ;should technically have zc_arr, but until that is nonzero this is the same and faster
             groundplane0=2.*Sin(Cos(0.*!DtoR)*2.*!Pi*antenna_height/wavelength[freq_i]) ;normalization factor
